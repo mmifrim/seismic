@@ -1,0 +1,66 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+# Create your seismic data
+data = {
+    "Property": ["Property A"] * 6 + ["Property B"] * 6 + ["Property C"] * 6,
+    "Blast Date": pd.to_datetime([
+        "2024-01-01", "2024-02-01", "2024-03-04", "2024-05-02", "2024-05-17", "2024-08-01",
+        "2024-01-01", "2024-02-01", "2024-03-04", "2024-05-10", "2024-06-18", "2024-08-01",
+        "2024-01-01", "2024-02-01", "2024-03-04", "2024-07-16", "2024-08-01", "2024-09-11"
+    ]),
+    "V1 (in/sec)": [
+        0.02, 0.018, 0.045, 0.0225, 0.0275, 0.0325,  # Property A
+        0.025, 0.02, 0.045, 0.025, 0.035, 0.0325,    # Property B
+        0.03, 0.025, 0.103, 0.0725, 0.045, 0.095     # Property C
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# USBM PPV Threshold
+usbm_threshold = 0.5  # in/sec
+
+# Create subplot figure layout
+fig, axs = plt.subplots(2, 2, figsize=(12, 8))
+fig.suptitle("Peak Particle Velocity (PPV) by Property Over Time", fontsize=14)
+
+# Map properties to axes positions
+property_axes = {
+    "Property A": axs[0, 0],
+    "Property B": axs[0, 1],
+    "Property C": axs[1, 0]
+}
+
+# Define figure labels
+figure_labels = {
+    "Property A": "Figure 6",
+    "Property B": "Figure 7",
+    "Property C": "Figure 8"
+}
+
+# Plot the data for each property
+for prop, ax in property_axes.items():
+    df_prop = df[df["Property"] == prop]
+    ax.plot(df_prop["Blast Date"], df_prop["V1 (in/sec)"],
+            marker='o', linestyle='-', color='blue', label="PPV")
+    ax.axhline(usbm_threshold, color='red', linestyle='--', label="USBM Threshold (0.5 in/sec)")
+    ax.set_title(f"{figure_labels[prop]} – {prop}", fontsize=12)
+    ax.set_xlabel("Blast Date")
+    ax.set_ylabel("PPV (in/sec)")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%y'))
+    ax.tick_params(axis='x', labelrotation=0)
+    ax.grid(True)
+    ax.legend(fontsize=9)
+
+# Hide the unused subplot
+axs[1, 1].axis('off')
+
+# Final layout adjustment
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+
+# Save the figure
+plt.savefig("ppv_subplot_graphs_jan_start.png", dpi=600, bbox_inches='tight')
+
+print("Figure saved as 'ppv_subplot_graphs_jan_start.png'")
