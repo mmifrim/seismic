@@ -1,0 +1,58 @@
+# Import necessary libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+# Create the DataFrame based on your final table data
+data_v2 = {
+    "Property": ["Property A"] * 4 + ["Property B"] * 4 + ["Property C"] * 4,
+    "Blast Date": pd.to_datetime([
+        "2024-01-01", "2024-02-01", "2024-03-04", "2024-05-02",
+        "2024-05-17", "2024-08-01", "2024-01-01", "2024-02-01",
+        "2024-03-04", "2024-05-10", "2024-06-18", "2024-08-01"
+    ]),
+    "Predicted V2 (in/sec)": [
+        0.0191, 0.017, 0.043, 0.021,     # Property A
+        0.028, 0.033, 0.025, 0.020,      # Property B
+        0.065, 0.036, 0.051, 0.048       # Property C
+    ]
+}
+
+df_v2 = pd.DataFrame(data_v2)
+
+# Plotting the data
+fig, axs = plt.subplots(2, 2, figsize=(12, 8))
+fig.suptitle("Predicted Peak Particle Velocity (PPV) by Property Over Time", fontsize=14)
+
+# Dictionary to assign properties to subplot locations
+property_axes = {
+    "Property A": axs[0, 0],
+    "Property B": axs[0, 1],
+    "Property C": axs[1, 0]
+}
+
+# Plot each property in its respective subplot
+for prop, ax in property_axes.items():
+    df_prop = df_v2[df_v2["Property"] == prop]
+    ax.plot(df_prop["Blast Date"], df_prop["Predicted V2 (in/sec)"],
+            marker='o', linestyle='-', color='blue', linewidth=2, markersize=6, label="Predicted V2")
+    ax.axhline(0.5, color='red', linestyle='--', linewidth=1.5, label="USBM Threshold (0.5 in/sec)")
+    ax.set_title(f"{prop}", fontsize=12)
+    ax.set_xlabel("Blast Date")
+    ax.set_ylabel("PPV (in/sec)")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%y'))
+    ax.tick_params(axis='x', labelrotation=0)
+    ax.grid(True)
+    ax.legend(fontsize=9)
+
+# Remove unused subplot
+axs[1, 1].axis('off')
+
+# Final layout adjustments
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+
+# Save the figure as a PNG
+plt.savefig("ppv_subplot_graphs.png", dpi=600, bbox_inches='tight')
+
+# Show the plot
+plt.show()
