@@ -1,0 +1,61 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.table import Table
+
+# Final Seismic Event Metrics Table Data
+data_table = {
+    "Property": ["Property A"] * 4 + ["Property B"] * 4 + ["Property C"] * 4,
+    "Blast Date": ["1/1/2024", "2/1/2024", "3/4/2024", "5/2/2024",
+                   "5/17/2024", "8/1/2024", "1/1/2024", "2/1/2024",
+                   "3/4/2024", "5/10/2024", "6/18/2024", "8/1/2024"],
+    "V1 (in/sec)": [0.02, 0.018, 0.045, 0.0225,
+                    0.0295, 0.0345, 0.026, 0.021,
+                    0.045, 0.025, 0.035, 0.032],
+    "D1 (ft)": [7699] * 8 + [7758] * 4,
+    "D2 (ft)": [7920] * 4 + [7708] * 4 + [6124] * 4,
+    "W (lbs)": [193.5] * 12,
+    "Predicted V2 (in/sec)": [0.0191, 0.017, 0.043, 0.021,
+                               0.028, 0.033, 0.025, 0.020,
+                               0.065, 0.036, 0.051, 0.048],
+    "Predicted V (in/sec)": [0.009] * 8 + [0.014] * 4,
+    "Distance Ratio (D2/D1)": [1.03] * 4 + [1.00] * 4 + [0.79] * 4,
+    "Attenuation Factor (-1.6 Power)": [0.2459] * 4 + [0.2459] * 2 + [1.0943] * 2 + [1.0943] * 4,
+    "Vibration Reduction (%)": [4.5, 5.56, 4.44, 6.67,
+                                5.1, 4.35, 3.84, 4.8,
+                                -44.44, -44.00, -45.7, -50.0]
+}
+
+df = pd.DataFrame(data_table)
+
+# Plotting the Table
+fig, ax = plt.subplots(figsize=(14, 6))
+ax.axis('off')
+
+table_data = [df.columns.to_list()] + df.values.tolist()
+n_rows, n_cols = len(table_data), len(table_data[0])
+width, height = 1.0 / n_cols, 1.0 / n_rows
+
+table = Table(ax, bbox=[0, 0, 1, 1])
+
+# Add cells
+for i in range(n_rows):
+    for j in range(n_cols):
+        val = table_data[i][j]
+        facecolor = '#f0f0f0' if i == 0 else 'white'
+        cell = table.add_cell(i, j, width, height, text=str(val), loc='center', facecolor=facecolor)
+        cell.set_fontsize(10)
+        if i == 0:
+            cell.visible_edges = 'T' + 'B'
+        elif i == n_rows - 1:
+            cell.visible_edges = 'B'
+        else:
+            cell.visible_edges = ''
+
+ax.add_table(table)
+
+plt.title("TABLE 1\nSeismic Event Metrics by Property", fontsize=14, weight='bold', pad=20)
+
+# Save the figure
+plt.savefig("seismic_event_metrics_table.png", dpi=600, bbox_inches='tight')
+
+plt.show()
